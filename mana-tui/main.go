@@ -1413,8 +1413,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				content := strings.Join(m.messages, "\n")
 				header := m.getAiHeader()
 				content += "\n" + header + " " + m.spinner.View()
+
+				isAtBottom := m.viewport.AtBottom()
 				m.viewport.SetContent(content)
-				m.viewport.GotoBottom()
+				if isAtBottom {
+					m.viewport.GotoBottom()
+				}
 			}
 
 			return m, cmd
@@ -1450,8 +1454,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				content := strings.Join(m.messages, "\n")
 				header := m.getAiHeader()
 				content += "\n" + header + " " + m.spinner.View()
+
+				isAtBottom := m.viewport.AtBottom()
 				m.viewport.SetContent(content)
-				m.viewport.GotoBottom()
+				if isAtBottom {
+					m.viewport.GotoBottom()
+				}
 			} else {
 
 				agentName := msg.AgentName
@@ -1496,8 +1504,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					displayMessages = append(displayMessages, boxedContent)
 				}
 
+				isAtBottom := m.viewport.AtBottom()
 				m.viewport.SetContent(strings.Join(displayMessages, "\n"))
-				m.viewport.GotoBottom()
+				if isAtBottom {
+					m.viewport.GotoBottom()
+				}
 			}
 
 		case "end":
@@ -1720,7 +1731,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	p := tea.NewProgram(initialModel(conn), tea.WithAltScreen())
+	p := tea.NewProgram(initialModel(conn), tea.WithAltScreen(), tea.WithMouseCellMotion())
 	if _, err := p.Run(); err != nil {
 		log.Fatal("Error running program:", err)
 	}
